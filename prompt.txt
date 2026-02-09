@@ -1,0 +1,66 @@
+Code completion task:
+Complete the given partial Systemverilog RTL code based on the specification /workdir/docs/Specification.md. The RTL code should be synthesizable. The Solution should be present in a separate modules async_fifo.sv and pattern_detector.sv that has to be instantiated in the module process_packets.sv.
+
+Objective
+Design and verify a synthesisable SystemVerilog module that processes 64-bit packet data on clk_net, detects specific 4-byte and 8-byte patterns at fixed offsets, and transfers the data along with a unique 8-bit buffer ID to a higher-frequency clk_host domain.
+
+Architectural Requirements
+Pipeline Strategy: Implement a multi-stage pipeline. Stage 1: Byte-counting and pattern matching on clk_net. Stage 2: Asynchronous FIFO buffering to cross into the clk_host domain.
+Data Alignment: The interface is little-endian (Byte 0 at data[7:0]). The design must handle the length signal (0-7) at the End-of-Packet (EOP) to determine valid bytes.
+Pattern Logic: * Detect PACKET_TYPE (4 bytes) at a fixed offset.
+Detect one of four programmable SYMBOL values (8 bytes) at SYMBOL_OFFSET.
+CDC Considerations: Use an Asynchronous FIFO to handle the transition from clk_net to the faster clk_host.
+
+Implementation Details
+Module Interface: * Inputs: clk_net, aresetn, rx_valid, rx_data[63:0], rx_sop, rx_eop, rx_length[2:0], and 4x i_symbol_pattern[63:0].
+Outputs: tx_valid, tx_data[63:0], tx_sop, tx_eop, tx_length[2:0], and tx_buffer[7:0].
+State Machine: Use an FSM to track the current byte offset. Ensure the buffer value is generated and ready to be asserted precisely when tx_eop is '1' in the host domain.
+
+Partial RTL code
+```
+//-------------------------------------------------------------------
+// pattern_detector.sv
+// Operating in the clk_net domain, this is the core logic block. 
+// It inspects the incoming packet data. It contains a byte counter and the logic to compare packet data at specific offsets against the programmable PACKET_TYPE and SYMBOL values. It determines the correct buffer value for the entire packet.
+//-------------------------------------------------------------------
+module pattern_detector #(
+    parameter PACKET_TYPE_OFFSET = 16, // Fixed offset for PACKET_TYPE
+    parameter SYMBOL_OFFSET      = 64, // Fixed offset for SYMBOL_OFFSET
+    parameter PACKET_TYPE_VAL    = 32'hDEADBEEF
+) (
+	// This initial block operates on the slower clk_net. 
+    // It receives the incoming packet data, including the valid, data, SOP, and EOP signals..
+  
+
+    input  logic             clk_net,
+    input  logic             aresetn,
+
+    // Receiver Interface
+    input  logic             i_valid,
+    input  logic [63:0]      i_data,
+    input  logic             i_sop,
+    input  logic             i_eop,
+
+    // Programmable Symbol Patterns
+    input  logic [63:0]      i_symbol_pattern_1,
+    input  logic [63:0]      i_symbol_pattern_2,
+    input  logic [63:0]      i_symbol_pattern_3,
+    input  logic [63:0]      i_symbol_pattern_4,
+
+    // Output to Buffer FIFO
+    output logic [7:0]       o_buffer_val,
+    output logic             o_buffer_val_valid
+);
+
+    // Byte counter for tracking offset within the packet
+
+    // Internal state registers
+
+    // State machine for packet processing
+
+    // Combinational logic to generate the final buffer value on EOP
+
+endmodule
+```
+
+**Important**: This environment uses Icarus Verilog for testing. Avoid using SystemVerilog Assertion (SVA) property/sequence syntax if adding assertions.

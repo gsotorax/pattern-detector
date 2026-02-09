@@ -1,0 +1,7 @@
+README.md
+pyproject.toml
+pattern_detector.egg-info/PKG-INFO
+pattern_detector.egg-info/SOURCES.txt
+pattern_detector.egg-info/dependency_links.txt
+pattern_detector.egg-info/top_level.txt
+tests/test_pattern_detector_hidden.py

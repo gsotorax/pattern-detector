@@ -1,0 +1,11 @@
+[project]
+name = "pattern-detector"
+version = "0.1.0"
+description = "Pattern detector Verilog problem for HUD evaluation"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "cocotb>=1.8.0",
+    "pytest>=7.0.0",
+    "pytest-xdist>=3.0.0",
+]
