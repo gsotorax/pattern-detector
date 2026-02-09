@@ -85,5 +85,5 @@ def test_pattern_detector_runner():
     
     runner.test(
         hdl_toplevel="system_top",
-        test_module="test_pattern_detector"
+        test_module="test_pattern_detector_hidden"
     )
